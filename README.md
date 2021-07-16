@@ -14,5 +14,14 @@ In this project we are using a source of 10,000 bank records to predict the like
 
 # Data Cleaning:
 We removed unnecessary variables such as customer names and IDs. Now, we are left with the below Columns:
+* Age
+* Balance
+* CreditScore
+* Estimated Salary
+* Exited
 * Geography
 * Gender
+* HasCrCard
+* IsActiveMember
+* NumberOfProducts
+* Tenure
