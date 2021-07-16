@@ -1,9 +1,9 @@
 # Bank Customer Churn Prediction
 For a business in a stipulated period of time, customers can come under 3 major categories
  
- 1.Newly Acquired Customers
- 2.Existing Customers
- 3.Churned Customers
+1. Newly Acquired Customers
+2. Existing Customers
+3. Churned Customers
 
 Customer churn/attrition is a tendency of customers to abandon a brand and stop being a paying client of a particular business.
 
