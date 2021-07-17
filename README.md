@@ -40,3 +40,9 @@ The smallest number of customers are from Germany, and they are also the most li
 
 In percentage, female customers are more likely to leave the bank at 25%, compared to 16% of males.
 
+### Customer Count by Exit Status
+![Churn by Exit Status](https://user-images.githubusercontent.com/44424472/126026664-1e0ccd6e-db2b-4db6-bb89-4b94ab833b31.PNG)
+
+The majority class, "Stays" (0), has around 80% data points and the minority class, "Exits" (1), has around 20% datapoints.
+
+
