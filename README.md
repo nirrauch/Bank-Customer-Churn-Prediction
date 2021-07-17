@@ -13,7 +13,7 @@ Churned Customers means a direct loss of Marketing Acquisition Cost and possible
 In this project we are using a source of 10,000 bank records to predict the likelihood of a customer churn. You can  [click here ](https://www.kaggle.com/barelydedicated/bank-customer-churn-modeling) to get access to the raw data.
 
 # Data Cleaning:
-We removed unnecessary variables such as customer names and IDs to make the dataframe more readable. Now, we are left with the below Columns:
+We removed unnecessary variables such as row number, customer names and IDs to make the dataframe more readable. Now, we are left with the below Columns:
 * Age
 * Balance
 * CreditScore
