@@ -25,3 +25,6 @@ We removed unnecessary variables such as row number, customer names and IDs to m
 * IsActiveMember
 * NumberOfProducts
 * Tenure
+
+# EDA
+
