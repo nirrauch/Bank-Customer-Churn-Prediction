@@ -65,3 +65,9 @@ From density plots we can see that older customers and customer with more produc
 
 Very weak correlations in general. Only weak positive correlation with age, very weak positive correlation with balance, and very weak negative correlations with number of products and membership.
 
+---
+
+### Violin Plots:
+![Violin Plot](https://user-images.githubusercontent.com/44424472/126028343-94d8c39e-5619-488b-ad5a-325b71bc7b01.PNG)
+
+Violin plots are confirming the earlier statement that older customers and customer with more products are more likely to leave the bank.
