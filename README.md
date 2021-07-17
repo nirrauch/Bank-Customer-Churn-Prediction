@@ -59,7 +59,7 @@ The majority class, "Stays" (0), has around 80% data points and the minority cla
 From density plots we can see that older customers and customer with more products more often leaving the bank. We can also observe that customer having only 2 products has very less churn rate.
 
 ![Density Plots - Balance](https://user-images.githubusercontent.com/44424472/126043629-2ef9ec8d-a945-41c9-8294-c38fee26ad6c.PNG)
-Customers having balance between 80,000 to 1,50,000 tend to churn more.
+Customers having balance between 85,000 to 1,50,000 tend to churn more.
 
 ---
 
