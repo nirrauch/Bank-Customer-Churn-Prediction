@@ -28,5 +28,15 @@ We removed unnecessary variables such as row number, customer names and IDs to m
 * Tenure
 
 # EDA
+As part of analyzing the data, we plotted different predictors against the target variable, i.e the number of people and tried to see if any patterns emerge. Two such plots are worth looking into.
 
+### Customer Churn by Geography
 ![Churn by Geography](https://user-images.githubusercontent.com/44424472/126025672-7fc21789-9397-4d0d-9b30-ab5b07cd7ab7.PNG)
+
+The smallest number of customers are from Germany, and they are also the most likely to leave the bank. Almost one in three German customers in our sample left the bank.
+
+### Customer Churn by Gender
+![Churn by Gender](https://user-images.githubusercontent.com/44424472/126026527-9e1451d4-8086-4b24-a130-75ce9ece0d78.PNG)
+
+In percentage, female customers are more likely to leave the bank at 25%, compared to 16% of males.
+
