@@ -1,3 +1,4 @@
+
 # Bank Customer Churn Prediction
 For a business in a stipulated period of time, customers can come under 3 major categories
  
@@ -28,3 +29,4 @@ We removed unnecessary variables such as row number, customer names and IDs to m
 
 # EDA
 
+![Churn by Geography](https://user-images.githubusercontent.com/44424472/126025672-7fc21789-9397-4d0d-9b30-ab5b07cd7ab7.PNG)
