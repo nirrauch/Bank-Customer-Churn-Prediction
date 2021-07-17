@@ -45,4 +45,8 @@ In percentage, female customers are more likely to leave the bank at 25%, compar
 
 The majority class, "Stays" (0), has around 80% data points and the minority class, "Exits" (1), has around 20% datapoints.
 
+### Distribution Analysis:
+![Density Plots](https://user-images.githubusercontent.com/44424472/126027391-d4f81e7c-0a2b-499e-9d7d-b6a8ca4cf5e1.PNG)
+
+From density plots we can see that older customers and customer with more products more often leaving the bank. We can also observe that customer having only 2 products has very less churn rate.
 
