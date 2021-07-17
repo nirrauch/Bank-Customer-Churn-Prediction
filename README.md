@@ -58,3 +58,10 @@ The majority class, "Stays" (0), has around 80% data points and the minority cla
 
 From density plots we can see that older customers and customer with more products more often leaving the bank. We can also observe that customer having only 2 products has very less churn rate.
 
+---
+
+### Correlation Matrix:
+![Correlation Matrix](https://user-images.githubusercontent.com/44424472/126027783-15f50f3f-1cf5-43bc-85ed-319c947a0f7f.PNG)
+
+Very weak correlations in general. Only weak positive correlation with age, very weak positive correlation with balance, and very weak negative correlations with number of products and membership.
+
