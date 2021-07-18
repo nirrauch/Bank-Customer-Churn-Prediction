@@ -1,22 +1,25 @@
 #########################
 ##Cleaning Data and EDA##
 #########################
-#Install libraries if not installed, else load them
+#Install libraries if not installed, else load them-----------------------------
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg)) 
     install.packages(new.pkg, dependencies = TRUE)
   sapply(pkg, require, character.only = TRUE)
 }
-
 # usage
-packages <- c("ggplot2", "ISLR", "DataExplorer", "RColorBrewer", "dplyr", "data.table","rpart","randomForest","xgboost")
+packages <- c("ggplot2", "ISLR", "DataExplorer", "RColorBrewer", "dplyr", "data.table","rpart","randomForest","xgboost","DescTools","Hmisc")
 ipak(packages)
 
-setwd("C:/Users/archi/OneDrive/Documents/GitHub/STA380-69963/ML - Project 1")
-raw_data = read.csv('bank_user_data.csv')
-n = dim(raw_data)[1]
+#Set seed and working directory-------------------------------------------------
+set.seed(100)
+#setwd("C:/Users/archi/OneDrive/Documents/GitHub/STA380-69963/ML - Project 1")#--WD for Archit
+setwd("~/Documents/GitHub/Bank-Customer-Churn-Prediction")#--WD for Abhinav
 
+#Read data file
+raw_data = fread('bank_user_data.csv')
+n = dim(raw_data)[1]
 df = data.frame(raw_data)
 
 #Understanding the structure of data

@@ -1,0 +1,186 @@
+---
+title: "Intro to ML - Project (Churn)"
+author: "Abhinav, Archit, Ayush, Nir, Matthew"
+date: "7/18/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#########################
+##Cleaning Data and EDA##
+#########################
+#Install libraries if not installed, else load them-----------------------------
+ipak <- function(pkg){
+  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
+  if (length(new.pkg)) 
+    install.packages(new.pkg, dependencies = TRUE)
+  sapply(pkg, require, character.only = TRUE)
+}
+# usage
+packages <- c("ggplot2", "ISLR", "DataExplorer", "RColorBrewer", "dplyr", "data.table","rpart","randomForest","xgboost","DescTools","Hmisc")
+ipak(packages)
+
+#Set seed and working directory-------------------------------------------------
+set.seed(100)
+#setwd("C:/Users/archi/OneDrive/Documents/GitHub/STA380-69963/ML - Project 1")#--WD for Archit
+setwd("~/Documents/GitHub/Bank-Customer-Churn-Prediction")#--WD for Abhinav
+```
+
+
+
+```{r}
+#Read data file
+raw_data = fread('bank_user_data.csv')
+n = dim(raw_data)[1]
+df = data.frame(raw_data)
+
+#Understanding the structure of data
+str(df)
+```
+
+```{r}
+#Checking if there are any null value in the dataframe
+sapply(df,function(df) sum(is.na(df)))
+```
+
+```{r}
+#Checking Unique value counts in each columns
+sapply(df, n_distinct)
+
+#Exploring unique values for few variables
+unique(df$NumOfProducts)
+unique(df$HasCrCard)
+unique(df$IsActiveMember)
+unique(df$Exited)
+```
+
+```{r}
+## To make data frames easily readable we have 
+## removed unnecessary data fields
+df = subset(raw_data, select = -c(RowNumber,CustomerId,Surname))
+df = data.frame(df)
+
+#Coerce response variable to factor
+df$Exited = factor(as.character(df$Exited),levels = c("0","1"))
+
+#Plotting Histograms to understand the distributions
+par(mfrow = c(3, 2))
+
+hist(df$CreditScore,main=c("Credit Score"),xlab = c(""),col = "lightblue")
+hist(df$Age,main=c("Age"),xlab = c(""),col = "lightblue")
+hist(df$Tenure, breaks = 10,main=c("Tenure"),xlab = c(""),col = "lightblue")
+hist(df$Balance, breaks = 12,main=c("Balance"),xlab = c(""),col = "lightblue")
+hist(df$EstimatedSalary,main=c("Estimated Salary"),xlab = c(""),col = "lightblue")
+```
+
+
+```{r}
+#Plotting Bar Charts to understand the Categorical Variables
+theme_custom <- function () { 
+    theme_bw(base_size=12, base_family="Avenir") %+replace% 
+        theme(
+            panel.background  = element_blank(),
+            plot.background = element_rect(fill="gray96", colour=NA), 
+            legend.background = element_rect(fill="transparent", colour=NA),
+            legend.key = element_rect(fill="transparent", colour=NA)
+        )
+}
+
+ggplot(df, aes(x = factor(Gender))) + geom_bar(fill="skyblue2",alpha=0.65) +xlab("Gender")+
+  geom_text(aes(label = ..count..), stat = "count", vjust = 1.5, colour = "black")+theme_custom()
+
+ggplot(df, aes(x = factor(Geography))) + geom_bar(fill="skyblue2",alpha=0.65) +xlab("Geography")+
+  geom_text(aes(label = ..count..), stat = "count", vjust = 1.5, colour = "black")+theme_custom()
+
+ggplot(df, aes(x = factor(NumOfProducts))) + geom_bar(fill="skyblue2",alpha=0.65)+xlab("Number of Products")+
+  geom_text(aes(label = ..count..), stat = "count", vjust = 1.5, colour = "black")+theme_custom()
+
+ggplot(df, aes(x = factor(HasCrCard))) + geom_bar(fill="skyblue2",alpha=0.65) +xlab("Has Credit Card")+
+  geom_text(aes(label = ..count..), stat = "count", vjust = 1.5, colour = "black")+theme_custom()
+
+ggplot(df, aes(x = factor(IsActiveMember)))+ geom_bar(fill="skyblue2",alpha=0.65)+xlab("Active membership")+
+  geom_text(aes(label = ..count..), stat = "count", vjust = 1.5, colour = "black")+theme_custom()
+
+ggplot(df, aes(x = Exited)) + geom_bar(fill="skyblue2",alpha=0.65) +
+  geom_text(aes(label = ..count..), stat = "count", vjust = 1.5, colour = "black")+
+  labs( x = "Exit Status")+theme_custom()
+
+```
+
+```{r}
+#Customer Churn by Region
+table1 <- table(df$Exited, df$Geography, dnn=c("Exit Count", "Geography")) 
+barplot(table1, ylab="Frequency", xlab="Geography", main="Comparing Exit Status across countries\n", 
+        col=c("turquoise4", "turquoise2" ), beside=TRUE, width=.2)
+legend("right", title="Exited", legend= sort(unique(df$Exited)),
+       fill =c("turquoise4", "turquoise2" ), box.lty=0)
+
+```
+
+
+```{r}
+## Geography vs Gender
+cols <- c("Gender","Geography","NumOfProducts","HasCrCard","IsActiveMember","Exited" )
+df[cols] <- lapply(df[cols], function(x) as.factor(as.character(x)))
+
+g <- ggplot(df, aes(x = Geography)) +geom_bar(aes(fill = Gender),position="dodge")+geom_text(aes(label = ..count..),position = "identity", stat = "count", vjust =5 , colour = "black")+scale_fill_manual(values=c('#999999','#E69F00'))+theme_custom()
+plotly::ggplotly(g)
+
+
+
+```
+
+
+```{r}
+## Customer Churn by Geography
+plotly::ggplotly(ggplot(df, aes(x = Geography, fill = Exited)) +
+  geom_bar(position="dodge") +
+  geom_text(aes(label = ..count..),
+            stat = "Count",position = position_dodge(0.8),
+            vjust = 1.5, hjust = 0.5,
+            colour = "black") +
+  scale_fill_manual(values=c('#999999','#E69F00'))+
+  labs(title = "Churn by Geography")+theme_custom())
+```
+
+```{r}
+##Trying to plot in percent---WIP
+## Customer Churn by Gender
+plotly::ggplotly(ggplot(df, aes(x = Gender, fill = Exited)) +
+  geom_bar(position="dodge") +
+  geom_text(aes(label = ..count..),
+            stat = "Count",position = position_dodge(0.8),
+            vjust = 1.5, hjust = 0.9,
+            colour = "black") +
+  scale_fill_manual(values=c('#999999','#E69F00'))+
+  labs(title = "Churn by Gender")+theme_custom())
+
+```
+
+
+```{r}
+#Density Plots
+plotly::ggplotly(ggplot(df, aes(x=Age)) + 
+  geom_density(fill="grey",alpha=0.65)+theme_custom())
+
+plotly::ggplotly(ggplot(df, aes(x=Age,fill=Exited),size=1.3) + 
+  geom_density(alpha=0.65)+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  labs(title = "Density Plot: Age")+theme_custom())
+
+ggplot(df, aes(x=NumOfProducts, color=Exited)) + 
+  geom_density()+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  labs(title = "Density Plot: #Products")
+
+ggplot(df, aes(x=NumOfProducts, color=Exited)) + 
+  geom_density()+
+  scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+
+  labs(title = "Density Plot: #Products")
+
+```
+
+
+```{r}
+```
