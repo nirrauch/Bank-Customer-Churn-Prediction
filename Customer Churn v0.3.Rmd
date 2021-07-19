@@ -3,8 +3,10 @@ title: "Intro to ML - Project (Churn)"
 author: "Abhinav, Archit, Ayush, Nir, Matthew"
 date: "7/18/2021"
 output: html_document
----
+number_sections : true
 
+---
+Setting up
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #########################
@@ -21,6 +23,8 @@ ipak <- function(pkg){
 packages <- c("ggplot2", "ISLR", "DataExplorer", "RColorBrewer", "dplyr", "data.table","rpart","randomForest","xgboost","DescTools","Hmisc","ggcorrplot")
 ipak(packages)
 
+options(scipen=999)
+
 #Set seed and working directory-------------------------------------------------
 set.seed(100)
 #setwd("C:/Users/archi/OneDrive/Documents/GitHub/STA380-69963/ML - Project 1")#--WD for Archit
@@ -28,10 +32,12 @@ setwd("~/Documents/GitHub/Bank-Customer-Churn-Prediction")#--WD for Abhinav
 ```
 
 
-
+Exploring data
 ```{r}
 #Read data file
 raw_data = fread('bank_user_data.csv')
+
+
 n = dim(raw_data)[1]
 df = data.frame(raw_data)
 
@@ -55,7 +61,9 @@ unique(df$IsActiveMember)
 unique(df$Exited)
 ```
 
+
 ```{r}
+
 ## To make data frames easily readable we have 
 ## removed unnecessary data fields
 df = subset(raw_data, select = -c(RowNumber,CustomerId,Surname))
@@ -73,7 +81,7 @@ hist(df$Tenure, breaks = 10,main=c("Tenure"),xlab = c(""),col = "lightblue")
 hist(df$Balance, breaks = 12,main=c("Balance"),xlab = c(""),col = "lightblue")
 hist(df$EstimatedSalary,main=c("Estimated Salary"),xlab = c(""),col = "lightblue")
 ```
-
+We observe more or less gaussian distribution for credit score and age (with slight right skew) whereas Tenure and Estimated salary more or less are uniform in distribution. A big peak is seen in balance variable distribution at zero implying quite a lot of customers with zero balance accounts.
 
 ```{r}
 #Plotting Bar Charts to understand the Categorical Variables
@@ -107,14 +115,15 @@ ggplot(df, aes(x = Exited)) + geom_bar(fill="skyblue2",alpha=0.65) +
   labs( x = "Exit Status")+theme_custom()
 
 ```
+We observe majority customers are using credit card and roughly half of them have active membership. Rate of customer exit is 20%.
 
 ```{r}
 #Customer Churn by Region
-table1 <- table(df$Exited, df$Geography, dnn=c("Exit Count", "Geography")) 
-barplot(table1, ylab="Frequency", xlab="Geography", main="Comparing Exit Status across countries\n", 
-        col=c("turquoise4", "turquoise2" ), beside=TRUE, width=.2)
-legend("right", title="Exited", legend= sort(unique(df$Exited)),
-       fill =c("turquoise4", "turquoise2" ), box.lty=0)
+#table1 <- table(df$Exited, df$Geography, dnn=c("Exit Count", "Geography")) 
+#barplot(table1, ylab="Frequency", xlab="Geography", main="Comparing Exit Status across countries\n", 
+#        col=c("turquoise4", "turquoise2" ), beside=TRUE, width=.2)
+#legend("right", title="Exited", legend= sort(unique(df$Exited)),
+#       fill =c("turquoise4", "turquoise2" ), box.lty=0)
 
 ```
 
@@ -125,12 +134,12 @@ cols <- c("Gender","Geography","NumOfProducts","HasCrCard","IsActiveMember","Exi
 df[cols] <- lapply(df[cols], function(x) as.factor(as.character(x)))
 
 g <- ggplot(df, aes(x = Geography)) +geom_bar(aes(fill = Gender),position="dodge")+geom_text(aes(label = ..count..),position = "identity", stat = "count", vjust =5 , colour = "black")+scale_fill_manual(values=c('#999999','#E69F00'))+theme_custom()
-plotly::ggplotly(g)
+plotly::ggplotly(g+ggtitle("Gender Distribution by Geography"))
 
 
 
 ```
-
+We see similar gender distributions across all the countries.
 
 ```{r}
 ## Customer Churn by Geography
@@ -144,12 +153,14 @@ plotly::ggplotly(ggplot(df, aes(x = Geography, fill = Exited)) +
   labs(title = "Churn by Geography")+theme_custom())
 ```
 
+France despite having almost half of the customers from our sample has fewer exits. Germany on the contrary sees more attrition.
+
 ```{r}
 ##Trying to plot in percent---WIP
 ## Customer Churn by Gender
-plotly::ggplotly(ggplot(df, aes(x = Gender, fill = Exited)) +
+plotly::ggplotly(ggplot(df, aes(x = Gender,y = (..count..)/sum(..count..), fill = Exited)) +
   geom_bar(position="dodge") +
-  geom_text(aes(label = ..count..),
+  geom_text(aes(label =scales::percent( (..count..)/sum(..count..)) ,y = (..count..)/sum(..count..)),
             stat = "Count",position = position_dodge(0.8),
             vjust = 1.5, hjust = 0.9,
             colour = "black") +
@@ -157,7 +168,7 @@ plotly::ggplotly(ggplot(df, aes(x = Gender, fill = Exited)) +
   labs(title = "Churn by Gender")+theme_custom())
 
 ```
-
+Roughly one in every three women versus one in every five men are exiting the concerned banking services.
 
 ```{r}
 #Density Plots
@@ -173,7 +184,7 @@ plotly::ggplotly(ggplot(df, aes(x=Age,fill=Exited),size=1.3) +
 #ggplot(df, aes(x=NumOfProducts, color=Exited)) + geom_density()+scale_color_manual(values=c("#999999", "#E69F00", "#56B4E9"))+labs(title = "Density Plot: #Products")
 
 ```
-
+Age may as well be a good predictor given the observable difference in mean Age for customers retained vs lost.
 
 ```{r}
 #Correlation Analysis
@@ -181,7 +192,7 @@ plotly::ggplotly(ggplot(df, aes(x=Age,fill=Exited),size=1.3) +
 #str(df)
 cols_num <- c("CreditScore","Age","Tenure","NumOfProducts","Balance","EstimatedSalary" )
 df[cols_num] <- lapply(df[cols_num], function(x) as.numeric(x))
-corr <- round(cor(df[cols_num]), 1)
+corr <- round(cor(df[cols_num]), 2)
 #ggcorrplot(
 #  corr,
 #  hc.order = TRUE,
@@ -192,3 +203,49 @@ corr <- round(cor(df[cols_num]), 1)
 #)
 plotly::ggplotly(ggcorrplot(corr,outline.color = "black",colors = c("salmon","white","skyblue2"),lab = T)+ggtitle("Correlation plot\n"))
 ```
+
+Almost all continuous variables are uncorrelated thereby satisfying absence of multicollinearity assumption of logistic regression.
+
+```{r}
+
+
+
+
+```
+
+
+```{r}
+
+
+
+
+```
+
+
+```{r}
+
+
+
+
+```
+
+
+```{r}
+
+
+
+
+```
+
+
+
+```{r}
+
+
+
+
+```
+
+
+
+
