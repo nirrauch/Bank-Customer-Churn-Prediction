@@ -28,7 +28,8 @@ options(scipen=999)
 #Set seed and working directory-------------------------------------------------
 set.seed(100)
 #setwd("C:/Users/archi/OneDrive/Documents/GitHub/STA380-69963/ML - Project 1")#--WD for Archit
-setwd("~/Documents/GitHub/Bank-Customer-Churn-Prediction")#--WD for Abhinav
+#setwd("~/Documents/GitHub/Bank-Customer-Churn-Prediction")#--WD for Abhinav
+setwd("C:\\Users\\nirra\\Documents\\GitHub\\Bank-Customer-Churn-Prediction")#--WD for Nir
 ```
 
 
@@ -221,9 +222,36 @@ Almost all continuous variables are uncorrelated thereby satisfying absence of m
 
 ```
 
+#Random Forest
 
 ```{r}
+library(tree)
+library(randomForest)
+set.seed(1)
+samp = sample(1:nrow(df),nrow(df)/2)
+train =data.frame(df[samp,])
+test = data.frame(df[-samp,])
+ch.test = df[-samp,"Exited"]
+bag.churn = randomForest(df$Exited~.,data = df,subset = samp, mtry=(ncol(df)-1),ntree = 50, importance = TRUE)
+yhat.bag = predict(bag.churn,newdata = test)
+plot(tree(bag.churn))
+text(tree(bag.churn),pretty = 0)
+mean((yhat.bag-ch.test)^2)
 
+rf1.churn = randomForest(df$Exited~.,data = df,subset = samp, mtry=(ncol(df)-1)/3,ntree = 500, importance = TRUE)
+rf2.churn = randomForest(df$Exited~.,data = df,subset = samp, mtry=(ncol(df)-1)/2,ntree = 500, importance = TRUE)
+rf3.churn = randomForest(churn$Exited~.,data = churn,subset = samp, mtry=sqrt((ncol(churn)-1)),ntree = 500, importance = TRUE)
+
+yhat1.rf = predict(rf1.churn,newdata = test)
+yhat2.rf = predict(rf2.churn,newdata = test)
+yhat3.rf = predict(rf3.churn,newdata = test)
+
+mean((yhat1.rf-ch.test)^2)
+mean((yhat2.rf-ch.test)^2)
+mean((yhat3.rf-ch.test)^2)
+
+importance(rf2.churn)
+summary(rf2.churn)
 
 
 
